@@ -8,13 +8,13 @@ import (
 )
 
 // GetTweets returns channel with tweets for a given user.
-func (s *Scraper) GetTweets(ctx context.Context, user string, maxTweetsNbr int) <-chan *TweetResult {
-	return getTweetTimeline(ctx, user, maxTweetsNbr, s.FetchTweets)
+func (s *Scraper) GetTweets(ctx context.Context, user string, maxTweetsNbr int, sinceUnixTime ...int) <-chan *TweetResult {
+	return getTweetTimeline(ctx, user, maxTweetsNbr, s.FetchTweets, sinceUnixTime[0])
 }
 
 // GetTweetsAndReplies returns channel with tweets and replies for a given user.
-func (s *Scraper) GetTweetsAndReplies(ctx context.Context, user string, maxTweetsNbr int) <-chan *TweetResult {
-	return getTweetTimeline(ctx, user, maxTweetsNbr, s.FetchTweetsAndReplies)
+func (s *Scraper) GetTweetsAndReplies(ctx context.Context, user string, maxTweetsNbr int, sinceUnixTime ...int) <-chan *TweetResult {
+	return getTweetTimeline(ctx, user, maxTweetsNbr, s.FetchTweetsAndReplies, sinceUnixTime[0])
 }
 
 // FetchTweets gets tweets for a given user, via the Twitter frontend API.
@@ -407,8 +407,8 @@ func (timeline *homeTimeline) parseTweets() ([]*Tweet, string) {
 }
 
 // GetHomeTweets returns channel with tweets from home timeline
-func (s *Scraper) GetHomeTweets(ctx context.Context, maxTweetsNbr int) <-chan *TweetResult {
-	return getTweetTimeline(ctx, "", maxTweetsNbr, s.fetchHomeTweets)
+func (s *Scraper) GetHomeTweets(ctx context.Context, maxTweetsNbr int, sinceUnixTime ...int) <-chan *TweetResult {
+	return getTweetTimeline(ctx, "", maxTweetsNbr, s.fetchHomeTweets, sinceUnixTime[0])
 }
 
 func (s *Scraper) FetchHomeTweets(maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {
@@ -482,8 +482,8 @@ func (s *Scraper) fetchHomeTweets(_ string, maxTweetsNbr int, cursor string) ([]
 }
 
 // GetForYouTweets returns channel with tweets from for you timeline
-func (s *Scraper) GetForYouTweets(ctx context.Context, maxTweetsNbr int) <-chan *TweetResult {
-	return getTweetTimeline(ctx, "", maxTweetsNbr, s.fetchForYouTweets)
+func (s *Scraper) GetForYouTweets(ctx context.Context, maxTweetsNbr int, sinceUnixTime ...int) <-chan *TweetResult {
+	return getTweetTimeline(ctx, "", maxTweetsNbr, s.fetchForYouTweets, sinceUnixTime[0])
 }
 
 func (s *Scraper) FetchForYouTweets(maxTweetsNbr int, cursor string) ([]*Tweet, string, error) {

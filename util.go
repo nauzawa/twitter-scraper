@@ -107,7 +107,11 @@ func getUserTimeline(ctx context.Context, query string, maxProfilesNbr int, fetc
 	return channel
 }
 
-func getTweetTimeline(ctx context.Context, query string, maxTweetsNbr int, fetchFunc fetchTweetFunc) <-chan *TweetResult {
+func getTweetTimeline(ctx context.Context, query string, maxTweetsNbr int, fetchFunc fetchTweetFunc, sinceUnixTime ...int) <-chan *TweetResult {
+	_sinceUnixTime := 0
+	if len(sinceUnixTime) > 0 {
+		_sinceUnixTime = sinceUnixTime[0]
+	}
 	channel := make(chan *TweetResult)
 	go func(query string) {
 		defer close(channel)
@@ -139,6 +143,10 @@ func getTweetTimeline(ctx context.Context, query string, maxTweetsNbr int, fetch
 				default:
 				}
 
+				if int(tweet.Timestamp) < _sinceUnixTime {
+					tweetsNbr = maxTweetsNbr
+					break
+				}
 				if tweetsNbr < maxTweetsNbr {
 					nextCursor = next
 					channel <- &TweetResult{Tweet: *tweet}
